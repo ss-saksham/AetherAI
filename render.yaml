@@ -84,9 +84,9 @@ services:
         value: 8004
       - key: MONGODB_URL
         sync: false
-      - key: VITE_RAZORPAY_KEY
+      - key: RAZORPAY_KEY_ID
         sync: false
-      - key: RAZORPAY_SECRET
+      - key: RAZORPAY_KEY_SECRET
         sync: false
       - key: AUTH_SERVICE
         fromService:
