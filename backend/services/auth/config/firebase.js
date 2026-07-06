@@ -24,6 +24,10 @@ if (!serviceAccountObj) {
   throw new Error("Firebase Admin SDK failed to initialize: service account credentials missing.");
 }
 
+if (serviceAccountObj.private_key) {
+  serviceAccountObj.private_key = serviceAccountObj.private_key.replace(/\\n/g, "\n");
+}
+
 export const app = initializeApp({
   credential: cert(serviceAccountObj),
 });
