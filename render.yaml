@@ -13,6 +13,8 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
+      - key: FIREBASE_SERVICE_ACCOUNT
+        sync: false
 
   # 2. Chat Service
   - type: web
