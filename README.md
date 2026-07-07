@@ -1,9 +1,9 @@
 <h1 align="center">
-  CortexAI
+  Aether
 </h1>
 
 <p align="center">
-  CortexAI is a premium, multi-agent AI workspace designed for code generation, real-time web searches, document processing, and interactive agent discussions. Built with a highly responsive, modern glassmorphic dashboard, it features a scalable microservices architecture routed through an API Gateway, backed by Redis and MongoDB.
+  Aether is a premium, multi-agent AI workspace designed for code generation, real-time web searches, document processing, and interactive agent discussions. Built with a calm, typography-centric neutral workspace inspired by ex-Apple and Linear interfaces, it features a scalable microservices architecture routed through an API Gateway, backed by Redis and MongoDB.
 </p>
 
 <p align="center">
@@ -24,12 +24,12 @@
 
 | Feature | Description |
 | :--- | :--- |
-| **🤖 Intelligent Multi-Agent System** | Dynamic routing of user prompts to specialized autonomous agents (Coding, Web Search, and Chat) powered by Google Gemini. |
+| **🤖 Intelligent Multi-Agent System** | Dynamic routing of user prompts to specialized autonomous agents (Coding, Web Search, and Chat) powered by Gemini and Llama. |
 | **🔍 Real-Time Web Search** | Scrapes, cleans, and structures live web data using the Tavily Search API directly into the assistant stream. |
 | **💻 Interactive Coding Sandbox** | Generates clean HTML, CSS, and JS components and renders them in real time inside a side-by-side Monaco code editor sandbox. |
-| **🎨 Neo-Glass Dynamic UI** | Live layout-mode switcher to swap between traditional glass chat bubbles and an ultra-modern, centered chat-stream layout. |
+| **🎨 Premium Dual Aesthetics** | Monochromatic view switcher to swap between a quiet editorial text layout (Minimal Mode) and sharp, outlined graphite cards (Glass Mode). |
 | **💳 Billing & Credits Integration** | Fully integrated Razorpay payment gateway for custom plan upgrades and dynamic credit balances. |
-| **✨ Ambient Fluid Aesthetics** | Styled with obsidian glass textures, slow-warping ambient glows, and interactive Framer Motion micro-animations. |
+| **✨ Monochromatic Editorial Design** | Redesigned from first principles with matte carbon tones, subtle borders, system monospace type, and quiet micro-animations. |
 
 ---
 
@@ -37,15 +37,15 @@
 
 ```
    FRONTEND                       GATEWAY & CACHE                  MICROSERVICES
- ┌──────────────┐                 ┌──────────────┐                 ┌─────────────────┐
- │ React 19     │ ──────────────> │ Express API  │ ──────────────> │ Auth (Firebase) │
- │ Vite         │                 │ Gateway      │                 │ Chat (MongoDB)  │
- │ Tailwind CSS │                 └──────┬───────┘                 │ Agent (Gemini)  │
- │ Redux Toolkit│                        │                         │ Billing (Razor) │
- └──────────────┘                        v                         └─────────────────┘
-                                  ┌──────────────┐
-                                  │ Redis Cache  │
-                                  └──────────────┘
+  ┌──────────────┐                 ┌──────────────┐                 ┌─────────────────┐
+  │ React 19     │ ──────────────> │ Express API  │ ──────────────> │ Auth (Firebase) │
+  │ Vite         │                 │ Gateway      │                 │ Chat (MongoDB)  │
+  │ Tailwind CSS │                 └──────┬───────┘                 │ Agent (Gemini)  │
+  │ Redux Toolkit│                        │                         │ Billing (Razor) │
+  └──────────────┘                        v                         └─────────────────┘
+                                   ┌──────────────┐
+                                   │ Redis Cache  │
+                                   └──────────────┘
 ```
 
 ### Frontend (Client)
@@ -57,11 +57,11 @@
 ### Backend (Microservices)
 * **API Gateway**: Express-based central routing gateway
 * **Microservices**:
-  * **Auth Service**: Google Firebase Authentication
+  * **Auth Service**: Google Firebase Authentication (First-party proxied via Vercel for storage-partitioning protection)
   * **Chat Service**: MongoDB database bindings for messages and histories
-  * **Agent Service**: LangGraph supervisor node logic routing prompts to Gemini
+  * **Agent Service**: LangGraph supervisor node logic routing prompts dynamically to Google Gemini & Groq/Llama
   * **Billing Service**: Razorpay order configuration and payment verification
-* **Databases & Caching**: MongoDB Atlas (Primary Database), Redis Cache (Session and state caching)
+* **Databases & Caching**: MongoDB Atlas (Primary Database), Redis Cache (Resilient session and state caching with fast failovers)
 * **Containers**: Docker, Docker Compose
 
 ---
@@ -87,7 +87,8 @@ graph TD
     
     AgentService --> Redis[(Valkey/Redis Cache)]
     AgentService --> Tavily[Tavily Search API]
-    AgentService --> Gemini[Gemini 1.5 Pro]
+    AgentService --> Gemini[Gemini 2.5 Flash]
+    AgentService --> Llama[Llama 3.3 70B]
 ```
 
 ---
@@ -125,6 +126,6 @@ docker compose -f docker-compose.prod.yml up --build -d
 ## 🚀 Deployment
 
 The production instances of this project are configured and deployed on:
-* **Frontend**: Vercel (Static site hosting)
+* **Frontend**: Vercel (Static site hosting with first-party same-origin auth proxy rewrites)
 * **Backend Services**: Render (Docker-container-based web services)
 * **Session Cache**: Render Valkey/Redis instance
