@@ -1,50 +1,43 @@
 import express from "express";
-import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import redis from "../shared/redis/redis.js";
 import dotenv from "dotenv";
-import proxy from "express-http-proxy";
-import { proxyWithUser } from "./utils/proxyWithHeaders.js";
+import cookieParser from "cookie-parser";
+import { customProxy, isOriginAllowed } from "./utils/proxyWithHeaders.js";
 import { protect } from "./middlewares/auth.middleware.js";
 import { getCurrentUser } from "./controllers/user.controller.js";
-import cookieParser from "cookie-parser"
+
 dotenv.config();
 const app = express();
-const port=process.env.PORT || 5000
-const allowedOrigins = [
-  "http://localhost:5173",
-  process.env.CLIENT_URL
-].filter(Boolean);
+const port = process.env.PORT || 5000;
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    const isAllowed = allowedOrigins.includes(origin) || 
-                      origin.endsWith(".vercel.app") || 
-                      origin.includes("localhost");
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
-app.use(
-  "/uploads",
-  express.static("uploads")
-);
+// Global CORS & OPTIONS Preflight Interceptor
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (isOriginAllowed(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, x-user-id, x-user-email, x-user-avatar");
+  }
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
+app.use("/uploads", express.static("uploads"));
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
-app.use("/api/auth",proxy(process.env.AUTH_SERVICE))
-app.use("/api/me",protect,getCurrentUser)
-app.use("/api/chat",protect,proxyWithUser(process.env.CHAT_SERVICE))
-app.use("/api/agent",protect,proxyWithUser(process.env.AGENT_SERVICE))
-app.use("/api/billing",protect,proxyWithUser(process.env.BILLING_SERVICE))
 
+// Routes routed through customProxy to enforce CORS headers on proxied requests
+app.use("/api/auth", customProxy(process.env.AUTH_SERVICE));
+app.use("/api/me", protect, getCurrentUser);
+app.use("/api/chat", protect, customProxy(process.env.CHAT_SERVICE));
+app.use("/api/agent", protect, customProxy(process.env.AGENT_SERVICE));
+app.use("/api/billing", protect, customProxy(process.env.BILLING_SERVICE));
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -53,9 +46,6 @@ app.get("/", (req, res) => {
   });
 });
 
-
 app.listen(port, () => {
-  console.log(
-    `Gateway running on ${port}`
-  );
+  console.log(`Gateway running on ${port}`);
 });
