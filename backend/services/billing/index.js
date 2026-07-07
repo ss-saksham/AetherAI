@@ -7,13 +7,15 @@ import dotenv from "dotenv"
 import router from "./routes/billing.routes.js";
 dotenv.config()
 
-const formatUrl = (url) => {
-  if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
-    return `http://${url}`;
+const formatUrl = (url, defaultPort) => {
+  if (!url) return url;
+  let cleanUrl = url.replace(/^https?:\/\//, "");
+  if (!cleanUrl.includes(":")) {
+    cleanUrl = `${cleanUrl}:${defaultPort}`;
   }
-  return url;
+  return `http://${cleanUrl}`;
 };
-if (process.env.AUTH_SERVICE) process.env.AUTH_SERVICE = formatUrl(process.env.AUTH_SERVICE);
+if (process.env.AUTH_SERVICE) process.env.AUTH_SERVICE = formatUrl(process.env.AUTH_SERVICE, 8001);
 
 const port=process.env.PORT
 const app =

@@ -9,16 +9,18 @@ import { getCurrentUser } from "./controllers/user.controller.js";
 
 dotenv.config();
 
-const formatUrl = (url) => {
-  if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
-    return `http://${url}`;
+const formatUrl = (url, defaultPort) => {
+  if (!url) return url;
+  let cleanUrl = url.replace(/^https?:\/\//, "");
+  if (!cleanUrl.includes(":")) {
+    cleanUrl = `${cleanUrl}:${defaultPort}`;
   }
-  return url;
+  return `http://${cleanUrl}`;
 };
-if (process.env.AUTH_SERVICE) process.env.AUTH_SERVICE = formatUrl(process.env.AUTH_SERVICE);
-if (process.env.CHAT_SERVICE) process.env.CHAT_SERVICE = formatUrl(process.env.CHAT_SERVICE);
-if (process.env.AGENT_SERVICE) process.env.AGENT_SERVICE = formatUrl(process.env.AGENT_SERVICE);
-if (process.env.BILLING_SERVICE) process.env.BILLING_SERVICE = formatUrl(process.env.BILLING_SERVICE);
+if (process.env.AUTH_SERVICE) process.env.AUTH_SERVICE = formatUrl(process.env.AUTH_SERVICE, 8001);
+if (process.env.CHAT_SERVICE) process.env.CHAT_SERVICE = formatUrl(process.env.CHAT_SERVICE, 8002);
+if (process.env.AGENT_SERVICE) process.env.AGENT_SERVICE = formatUrl(process.env.AGENT_SERVICE, 8003);
+if (process.env.BILLING_SERVICE) process.env.BILLING_SERVICE = formatUrl(process.env.BILLING_SERVICE, 8004);
 
 const app = express();
 const port = process.env.PORT || 5000;
