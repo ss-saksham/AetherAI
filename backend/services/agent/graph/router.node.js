@@ -61,7 +61,7 @@ if(state.file){
 
 
  const llm =
- getModel("router");
+ getModel("router", state.model);
 
  const result =
  await llm.invoke(`

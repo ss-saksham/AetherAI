@@ -275,7 +275,7 @@ export const pptAgent = async (state) => {
         "ppt"
 
     ); 
-    const llm = getModel("ppt");
+    const llm = getModel("ppt", state.model);
 
     const aiResponse = await llm.invoke(`
 Create a professional PowerPoint presentation on the topic below.

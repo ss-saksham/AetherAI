@@ -24,7 +24,7 @@ function cleanCode(code = "") {
 }
 
   const llm =
-    getModel("coding");
+    getModel("coding", state.model);
 
  const response = await llm.invoke(`You are CortexAI Coding Agent.
 

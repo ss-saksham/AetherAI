@@ -21,7 +21,7 @@ await checkAgentLimit(
 
     );  
     const llm =
-      getModel("pdf");
+      getModel("pdf", state.model);
 
     const aiResponse =
       await llm.invoke(`

@@ -44,7 +44,14 @@ const getOpenRouter = () => {
   return openRouterInstance;
 };
 
-export const getModel = (agent) => {
+export const getModel = (agent, preferredModel) => {
+  if (preferredModel === "gemini") {
+    return gemini;
+  }
+  if (preferredModel === "groq") {
+    return getGroq();
+  }
+
   switch (agent) {
     case "coding":
       return gemini;

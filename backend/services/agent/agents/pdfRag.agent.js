@@ -74,7 +74,7 @@ relevantDocs
 .map(doc=>doc.pageContent)
 
 .join("\n\n");
-const llm =getModel("pdf-rag");
+const llm =getModel("pdf-rag", state.model);
 
     const messages=[
 

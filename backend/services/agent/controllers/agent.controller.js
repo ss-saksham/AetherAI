@@ -14,7 +14,9 @@ async(req,res,next)=>{
 
    conversationId,
 
-   agent
+   agent,
+
+   model
 
 } = req.body;
 
@@ -51,6 +53,7 @@ await axios.post(`${process.env.CHAT_SERVICE}/save-message`,{
     "x-user-id"
    ],
    agent,
+   model,
    file:req.file
 
   });

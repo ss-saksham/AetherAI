@@ -18,6 +18,7 @@ export default function ChatInput({
   setBanner
 }) {
 const [isListening, setIsListening] = useState(false);
+const [selectedModel, setSelectedModel] = useState("gemini");
 
 const recognitionRef = useRef(null);
   const dispatch = useDispatch();
@@ -214,6 +215,11 @@ formData.append(
 formData.append(
     "agent",
     selectedAgent
+);
+
+formData.append(
+    "model",
+    selectedModel
 );
 
 if(selectedFile){
@@ -541,20 +547,39 @@ isListening
 >
 
 {
-
 isListening
-
 ?
-
 <MicOff size={14}/>
-
 :
-
 <Mic size={14}/>
-
 }
-
 </button>
+
+            {/* Model Switcher Pill */}
+            <div className="flex items-center ml-2 bg-white/[0.03] border border-white/[0.06] rounded-full p-0.5 select-none">
+              <button
+                type="button"
+                onClick={() => setSelectedModel("gemini")}
+                className={`px-3 py-1 rounded-full text-[10px] font-semibold transition-all duration-150 cursor-pointer ${
+                  selectedModel === "gemini"
+                    ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-sm"
+                    : "text-slate-500 hover:text-slate-400"
+                }`}
+              >
+                Gemini
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedModel("groq")}
+                className={`px-3 py-1 rounded-full text-[10px] font-semibold transition-all duration-150 cursor-pointer ${
+                  selectedModel === "groq"
+                    ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-sm"
+                    : "text-slate-500 hover:text-slate-400"
+                }`}
+              >
+                Groq
+              </button>
+            </div>
           </div>
 
           {/* Right — send / stop */}
