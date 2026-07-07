@@ -32,13 +32,15 @@ const [showBilling, setShowBilling] =useState(false);
     e.stopPropagation();
     try {
       await deleteConversation(conversationId);
+    } catch (error) {
+      console.log("Error deleting conversation on server", error);
+    } finally {
+      // Always remove from local state to keep the UI clean
       dispatch(removeConversation(conversationId));
       if (selectedConversation?._id === conversationId) {
         dispatch(setMessages([]));
         dispatch(setArtifacts([]));
       }
-    } catch (error) {
-      console.log("Error deleting conversation", error);
     }
   };
 
