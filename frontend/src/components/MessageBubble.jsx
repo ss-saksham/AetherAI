@@ -11,7 +11,7 @@ function MessageBubble({ role, content, images = [] }) {
   const isUser = role === "user";
   const [lightboxSrc, setLightboxSrc] = useState(null);
   const [copiedCode, setCopiedCode] = useState("");
-  const { theme } = useSelector(state => state.user);
+  const { theme, userData } = useSelector(state => state.user);
   
   const copyCode = async (code) => {
     await navigator.clipboard.writeText(code);
@@ -28,15 +28,19 @@ function MessageBubble({ role, content, images = [] }) {
 
   if (theme === "neo-glass") {
     return (
-      <div className={`w-full py-5 border-b border-white/[0.03] transition-colors duration-150 ${isUser ? "bg-white/[0.01]" : "bg-white/[0.02]"}`}>
-        <div className="max-w-3xl mx-auto px-4 flex gap-4">
+      <div className={`w-full py-5.5 border-b border-white/[0.02] transition-colors duration-200 ${isUser ? "bg-white/[0.005]" : "bg-white/[0.015]"}`}>
+        <div className="max-w-3xl mx-auto px-4 flex gap-4.5">
           <div className="shrink-0 pt-0.5">
             {isUser ? (
-              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-[11px] font-bold text-indigo-400">
-                U
-              </div>
+              userData?.avatar ? (
+                <img src={userData.avatar} alt="User" className="w-[34px] h-[34px] rounded-full object-cover border border-white/10" />
+              ) : (
+                <div className="w-[34px] h-[34px] rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-[11px] font-bold text-indigo-400 select-none">
+                  U
+                </div>
+              )
             ) : (
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center border border-indigo-400/30 text-white font-bold text-[11px]">
+              <div className="w-[34px] h-[34px] rounded-full bg-gradient-to-br from-indigo-400 via-violet-500 to-cyan-400 flex items-center justify-center border border-indigo-300/20 text-white font-bold text-[10px] shadow-[0_0_12px_rgba(99,102,241,0.25)] select-none">
                 AI
               </div>
             )}
@@ -118,22 +122,22 @@ function MessageBubble({ role, content, images = [] }) {
   }
 
   return (
-    <div className={`flex gap-3 items-start my-1.5 ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex gap-3.5 items-start my-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
-        <div className="shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center border border-indigo-400/30 text-white font-bold text-[10px] shadow-md shadow-indigo-500/10 mt-1">
+        <div className="shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 via-violet-500 to-cyan-400 flex items-center justify-center border border-indigo-300/25 text-white font-bold text-[10px] shadow-[0_0_12px_rgba(99,102,241,0.2)] mt-1 select-none">
           AI
         </div>
       )}
 
       <div
         className={`w-fit max-w-[85vw] md:max-w-[70%]
-          px-5 py-3 rounded-2xl
+          px-5 py-3 rounded-[22px]
           break-words overflow-hidden
-          leading-relaxed shadow-lg
+          leading-relaxed shadow-lg transition-all duration-300
           ${
             isUser
-              ? "bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700 text-white rounded-tr-none border border-indigo-500/30 shadow-indigo-500/10"
-              : "bg-[#13161c]/80 border border-white/[0.06] text-slate-200 rounded-tl-none shadow-black/30 backdrop-blur-sm"
+              ? "bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white rounded-tr-[4px] border border-indigo-400/20 shadow-[0_4px_16px_rgba(99,102,241,0.15)]"
+              : "bg-[#0c0d12]/60 border border-white/[0.05] text-slate-200 rounded-tl-[4px] shadow-black/20 backdrop-blur-md"
           }`}
       >
         {images.length > 0 && (

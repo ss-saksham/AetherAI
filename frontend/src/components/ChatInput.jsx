@@ -311,28 +311,28 @@ catch(error){
           onClick={() => setSelectedAgent(agent.id)}
           className={`
             flex-shrink-0
-            
             inline-flex
             items-center
-            gap-1.5
-            px-3
+            gap-2
+            px-4
             py-2
-            rounded-full
+            rounded-[14px]
             text-xs
-            font-medium
+            font-bold
             border
             transition-all
-
+            duration-300
+            cursor-pointer
             ${
               isActive
-                ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white border-transparent shadow-[0_1px_8px_rgba(99,102,241,.35)]"
-                : "bg-white/[0.03] text-slate-400 border-white/[0.06] hover:bg-white/[0.07]"
+                ? "bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 text-white border-transparent shadow-[0_2px_12px_rgba(99,102,241,0.3)] scale-[1.01]"
+                : "bg-white/[0.015] text-slate-400 border-white/[0.04] hover:bg-white/[0.04] hover:text-slate-200"
             }
           `}
         >
 
           <Icon
-            size={14}
+            size={13.5}
             className={
               isActive
                 ? "text-white"
@@ -560,10 +560,10 @@ isListening
               <button
                 type="button"
                 onClick={() => setSelectedModel("gemini")}
-                className={`px-3 py-1 rounded-full text-[10px] font-semibold transition-all duration-150 cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                   selectedModel === "gemini"
-                    ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-sm"
-                    : "text-slate-500 hover:text-slate-400"
+                    ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-[0_2px_8px_rgba(99,102,241,0.25)]"
+                    : "text-slate-500 hover:text-slate-300"
                 }`}
               >
                 Gemini
@@ -571,10 +571,10 @@ isListening
               <button
                 type="button"
                 onClick={() => setSelectedModel("groq")}
-                className={`px-3 py-1 rounded-full text-[10px] font-semibold transition-all duration-150 cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                   selectedModel === "groq"
-                    ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-sm"
-                    : "text-slate-500 hover:text-slate-400"
+                    ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-[0_2px_8px_rgba(99,102,241,0.25)]"
+                    : "text-slate-500 hover:text-slate-300"
                 }`}
               >
                 Groq

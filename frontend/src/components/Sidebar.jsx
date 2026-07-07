@@ -259,7 +259,7 @@ const [showBilling, setShowBilling] =useState(false);
       <div className="px-4 pt-4 pb-1">
         <button
           onClick={handleCreateConversation}
-          className="w-full flex items-center justify-center gap-2 text-sm font-medium text-white bg-gradient-to-br from-indigo-500 to-violet-700 rounded-xl py-[10px] border-none cursor-pointer hover:opacity-90 transition-opacity duration-150"
+          className="w-full flex items-center justify-center gap-2 text-sm font-semibold text-white bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 rounded-[14px] py-3.5 border-none cursor-pointer hover:shadow-[0_4px_20px_rgba(99,102,241,0.25)] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300"
         >
           <Plus size={15} />
           New Chat
@@ -337,39 +337,40 @@ const [showBilling, setShowBilling] =useState(false);
       <div className="mx-2.5 h-px bg-white/[0.06]" />
 
       {/* Footer */}
-      <div className="px-3.5 py-3.5">
+      <div className="px-4 py-4">
         {userData ? (
-          <div className="flex items-center gap-2.5 cursor-pointer rounded-xl px-3 py-2.5 hover:bg-white/[0.05] transition-colors duration-150">
+          <div className="flex items-center gap-3 bg-white/[0.015] border border-white/[0.04] backdrop-blur-md rounded-2xl p-3 shadow-md hover:bg-white/[0.035] hover:border-white/[0.07] transition-all duration-300">
             <div className="relative shrink-0">
               {
   !userData?.avatar || imageError ? (
-    <div className="w-9 h-9 rounded-[10px] bg-white/[0.06] flex items-center justify-center">
+    <div className="w-9 h-9 rounded-full bg-white/[0.06] flex items-center justify-center">
       <User size={15} className="text-slate-400" />
     </div>
   ) : (
     <img
       src={userData.avatar}
       alt={userData.name}
-      className="w-9 h-9 rounded-[10px] object-cover border-2 border-indigo-500/25"
+      className="w-9 h-9 rounded-full object-cover border-2 border-indigo-500/20"
       onError={() => setImageError(true)}
     />
   )
 }
-              <span className="absolute -bottom-px -right-px w-[9px] h-[9px] bg-green-500 rounded-full border-2 border-[#0d0f14] block" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-[10px] h-[10px] bg-emerald-500 rounded-full border-2 border-[#0c0d12] animate-pulse block" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[13.5px] font-semibold text-slate-100 truncate">{userData.name}</p>
-              <p className="text-[11px] text-slate-600 mt-px">{userData.plan || "Free Plan"}</p>
+              <p className="text-[13px] font-bold text-slate-200 truncate">{userData.name}</p>
+              <p className="text-[10px] font-semibold text-indigo-400 tracking-wide uppercase mt-0.5">{userData.plan || "Free Plan"}</p>
             </div>
-            <div className="flex gap-1">
+            <div className="flex gap-1 shrink-0">
               <button
     onClick={() => setShowBilling(true)}
-    className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-yellow-600 cursor-pointer hover:bg-white/[0.08] hover:text-slate-400 transition-all duration-150"
+    className="flex items-center justify-center w-7 h-7 rounded-lg border-none bg-transparent text-yellow-500 cursor-pointer hover:bg-white/[0.08] transition-all duration-150"
+    title="Billing & Upgrade"
 >
-    <CoinsIcon size={16}/>
+    <CoinsIcon size={15}/>
 </button>
-              <button onClick={logout} className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-slate-600 cursor-pointer hover:bg-white/[0.08] hover:text-slate-400 transition-all duration-150">
-                <LogOut size={14} />
+              <button onClick={logout} className="flex items-center justify-center w-7 h-7 rounded-lg border-none bg-transparent text-slate-500 cursor-pointer hover:bg-white/[0.08] hover:text-red-400 transition-all duration-150" title="Log Out">
+                <LogOut size={13} />
               </button>
             </div>
           </div>

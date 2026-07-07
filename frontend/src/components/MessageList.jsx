@@ -86,6 +86,7 @@ export default function MessageList({ setValue, setSelectedAgent }) {
 
   const bottomRef = useRef(null);
   const { messages, isLoading } = useSelector(state => state.message);
+  const { userData } = useSelector(state => state.user);
   const { selectedConversation } = useSelector(state => state.conversation);
   const dispatch = useDispatch();
 useEffect(() => {
@@ -164,14 +165,14 @@ if (latestArtifactMessage) {
               </svg>
             </div>
             <h1 className="bg-gradient-to-r from-indigo-200 via-violet-200 to-cyan-200 bg-clip-text text-transparent text-3xl font-bold tracking-tight">
-              CortexAI
+              Hello, {userData?.name ? userData.name.split(" ")[0] : "there"}
             </h1>
-            <p className="text-[13px] text-slate-500 max-w-[280px] leading-relaxed">
-              An intelligent multi-agent platform for coding, search, and document generation.
+            <p className="text-[13.5px] text-slate-400 max-w-[340px] leading-relaxed mt-2">
+              Welcome back to your multi-agent creative studio. What shall we co-create today?
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 max-w-2xl w-full mt-6 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4.5 max-w-2xl w-full mt-8 text-left">
             {[
               {
                 title: "Code Generation",
@@ -206,24 +207,24 @@ if (latestArtifactMessage) {
                     setValue(card.prompt);
                     setSelectedAgent(card.agent);
                   }}
-                  className="group flex flex-col justify-between items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-indigo-500/30 hover:bg-white/[0.04] transition-all duration-300 cursor-pointer text-left focus:outline-none"
+                  className="group flex flex-col justify-between items-start gap-4 p-5 rounded-[22px] bg-[#0c0d12]/40 backdrop-blur-md border border-white/[0.05] hover:border-indigo-500/30 hover:bg-[#11131c]/60 shadow-lg hover:shadow-[0_8px_30px_rgba(99,102,241,0.06)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer text-left focus:outline-none"
                 >
-                  <div className="flex flex-col gap-2.5 w-full">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${card.color}`}>
-                      <Icon size={14} />
+                  <div className="flex flex-col gap-3 w-full">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center border ${card.color}`}>
+                      <Icon size={15} />
                     </div>
                     <div>
-                      <h4 className="text-[13px] font-semibold text-slate-200 tracking-tight">
+                      <h4 className="text-[13.5px] font-semibold text-slate-200 tracking-tight">
                         {card.title}
                       </h4>
-                      <p className="text-[11.5px] text-slate-500 leading-normal mt-1">
+                      <p className="text-[11.5px] text-slate-500 leading-relaxed mt-1">
                         {card.desc}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-[11px] font-medium text-slate-500 group-hover:text-indigo-400 transition-colors mt-1">
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 group-hover:text-indigo-400 transition-colors mt-2">
                     Try prompt
-                    <ArrowRight size={11} className="transform group-hover:translate-x-0.5 transition-transform" />
+                    <ArrowRight size={12} className="transform group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </button>
               );
