@@ -13,7 +13,7 @@ export const messageSlice = createSlice({
   reducers: {
     setMessages:(state,action)=>{
 
-   state.messages =action.payload;
+   state.messages = Array.isArray(action.payload) ? action.payload : [];
 
   },
 
@@ -28,7 +28,7 @@ export const messageSlice = createSlice({
 
   },
   setArtifacts: (state, action) => {
-  state.artifacts = action.payload;
+  state.artifacts = Array.isArray(action.payload) ? action.payload : [];
 }
  
   },

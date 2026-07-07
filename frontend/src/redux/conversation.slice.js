@@ -11,9 +11,9 @@ export const conversationSlice = createSlice({
   initialState,
   reducers: {
      setConversations:(state,action)=>{
-   state.conversations=action.payload;
+    state.conversations=Array.isArray(action.payload) ? action.payload : [];
 
-  },
+   },
 
   addConversation:(state,action)=>{
 

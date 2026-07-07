@@ -46,7 +46,7 @@ const [showBilling, setShowBilling] =useState(false);
     const fetchConversations = async () => {
       try {
         const data = await getConversations();
-        dispatch(setConversations(data));
+        dispatch(setConversations(Array.isArray(data) ? data : []));
       } catch (error) {
         console.log(error);
       }
@@ -120,7 +120,7 @@ const [showBilling, setShowBilling] =useState(false);
       </button>
 
       <div className="flex-1 flex flex-col items-center gap-1 overflow-y-auto w-full px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden mt-1">
-        {conversations.map((chat) => {
+        {Array.isArray(conversations) && conversations.map((chat) => {
           const isActive = selectedConversation?._id === chat._id;
           return (
             <button
@@ -267,7 +267,7 @@ const [showBilling, setShowBilling] =useState(false);
      
       {/* Chat list */}
       <div className="flex-1 overflow-y-auto px-2.5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {conversations.map((chat) => {
+        {Array.isArray(conversations) && conversations.map((chat) => {
           const isActive = selectedConversation?._id === chat._id;
           const isHov    = hovered === chat._id;
           return (
