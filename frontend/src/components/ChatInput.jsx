@@ -37,9 +37,9 @@ setSelectedFile
 
    const placeholders={
 
-auto:"Ask CortexAI...",
+auto:"Ask Aether...",
 
-chat:"Chat with CortexAI...",
+chat:"Chat with Aether...",
 
 coding:"Describe the software you want...",
 

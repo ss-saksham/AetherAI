@@ -80,7 +80,7 @@ const llm =getModel("pdf-rag", state.model);
 
 new SystemMessage(`
 
-You are CortexAI PDF Assistant.
+You are Aether PDF Assistant.
 
 Rules:
 

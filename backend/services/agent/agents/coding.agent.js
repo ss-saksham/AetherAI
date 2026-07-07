@@ -26,7 +26,7 @@ function cleanCode(code = "") {
   const llm =
     getModel("coding", state.model);
 
- const response = await llm.invoke(`You are CortexAI Coding Agent.
+ const response = await llm.invoke(`You are Aether Coding Agent.
 
 Your first task is to identify the user's intent.
 
