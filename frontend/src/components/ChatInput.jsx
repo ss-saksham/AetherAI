@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { Send, Paperclip,  Square, Zap, MessageSquare, Code2, Presentation, Image as ImageIcon, Globe, FileText,X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Send, Paperclip, Square, Zap, MessageSquare, Code2, Presentation, Image as ImageIcon, Globe, FileText, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage, setArtifacts, setIsLoading } from "../redux/message.slice";
 import { sendPrompt } from "../features/agent.api";
 import { Mic, MicOff } from "lucide-react";
-import { useEffect } from "react";
 import { createConversation, updateConversations } from "../features/conversation.api";
 import { addConversation, setConvTitle, setSelectedConversation } from "../redux/conversation.slice";
-import { useRef } from "react";
 import { setUserData } from "../redux/user.slice";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ChatInput({
   value,
@@ -280,7 +279,62 @@ catch(error){
     }
   };
 
+  const commands = [
+    { id: "auto", label: "Auto Agent", desc: "Select best agent automatically" },
+    { id: "chat", label: "General Chat", desc: "Conversational discussion node" },
+    { id: "coding", label: "Coding Workspace", desc: "Generate interactive client-side sandboxes" },
+    { id: "pdf", label: "PDF Document", desc: "Generate report documents" },
+    { id: "ppt", label: "PPT Presentation", desc: "Create widescreen presentations" },
+    { id: "image", label: "Image Vision", desc: "Analyze or describe uploaded images" },
+    { id: "search", label: "Web Search", desc: "Scrape real-time web results" },
+    { id: "clear", label: "Clear Chat", desc: "Reset active creative workspace" }
+  ];
+
+  const isCommandMode = value.startsWith("/");
+  const commandQuery = isCommandMode ? value.slice(1).toLowerCase() : "";
+  const filteredCommands = commands.filter(cmd =>
+    cmd.id.startsWith(commandQuery) || cmd.label.toLowerCase().includes(commandQuery)
+  );
+
+  const [commandIndex, setCommandIndex] = useState(0);
+
+  useEffect(() => {
+    setCommandIndex(0);
+  }, [value]);
+
+  const executeCommand = (cmd) => {
+    if (cmd.id === "clear") {
+      window.dispatchEvent(new Event("create-new-chat"));
+    } else {
+      setSelectedAgent(cmd.id);
+    }
+    setValue("");
+  };
+
   const handleKeyDown = (e) => {
+    if (isCommandMode && filteredCommands.length > 0) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setCommandIndex((prev) => (prev + 1) % filteredCommands.length);
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setCommandIndex((prev) => (prev - 1 + filteredCommands.length) % filteredCommands.length);
+        return;
+      }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        executeCommand(filteredCommands[commandIndex]);
+        return;
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setValue("");
+        return;
+      }
+    }
+
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -289,8 +343,46 @@ catch(error){
 
   return (
     <div className="w-full bg-transparent px-6 pb-6 pt-3 select-none">
-      <div className="max-w-2xl mx-auto w-full bg-[#121214] border border-white/[0.04] rounded-xl flex flex-col focus-within:border-white/[0.08] transition-all duration-200 shadow-sm">
+      <div className="max-w-2xl mx-auto w-full bg-[#121214] border border-white/[0.04] rounded-xl flex flex-col focus-within:border-white/[0.08] transition-all duration-200 shadow-sm relative">
         
+        {/* Floating Slash Command Menu */}
+        <AnimatePresence>
+          {isCommandMode && filteredCommands.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.98 }}
+              transition={{ duration: 0.15 }}
+              className="absolute bottom-full left-0 right-0 mb-2 z-[60] bg-[#0e0e11] border border-white/[0.06] rounded-xl p-1.5 shadow-[0_16px_32px_rgba(0,0,0,0.7)] max-h-[220px] overflow-y-auto space-y-0.5"
+            >
+              <div className="px-2.5 py-1.5 text-[9px] font-mono text-[#52525b] uppercase border-b border-white/[0.02] mb-1">
+                Workspace Commands
+              </div>
+              {filteredCommands.map((cmd, index) => {
+                const isSelected = index === commandIndex;
+                return (
+                  <div
+                    key={cmd.id}
+                    onClick={() => executeCommand(cmd)}
+                    onMouseEnter={() => setCommandIndex(index)}
+                    className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors ${
+                      isSelected ? "bg-white/[0.03] text-white" : "text-[#a1a1aa]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono text-[#71717a] font-bold bg-white/[0.02] border border-white/[0.04] px-1 py-0.2 rounded">
+                        /{cmd.id}
+                      </span>
+                      <span className="text-[12px] font-medium">{cmd.label}</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-[#52525b]">{cmd.desc}</span>
+                  </div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Top toolbar: Monochromatic Agent Switcher */}
         <div className="flex gap-4.5 px-4 pt-3 pb-1 border-b border-white/[0.02] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none">
           {agents.map((agent) => {
@@ -372,6 +464,16 @@ catch(error){
             >
               {isListening ? <MicOff size={13} /> : <Mic size={13} />}
             </button>
+
+            {isListening && (
+              <div className="flex items-center gap-[2.5px] h-4 px-1 text-red-400">
+                <span className="w-[1.5px] h-2 bg-current rounded-full waveform-bar" style={{ animationDelay: '0.1s' }} />
+                <span className="w-[1.5px] h-3.5 bg-current rounded-full waveform-bar" style={{ animationDelay: '0.3s' }} />
+                <span className="w-[1.5px] h-1.5 bg-current rounded-full waveform-bar" style={{ animationDelay: '0.0s' }} />
+                <span className="w-[1.5px] h-4 bg-current rounded-full waveform-bar" style={{ animationDelay: '0.4s' }} />
+                <span className="w-[1.5px] h-2.5 bg-current rounded-full waveform-bar" style={{ animationDelay: '0.2s' }} />
+              </div>
+            )}
 
             {/* Quiet Monospace Model Switcher */}
             <div className="flex items-center gap-2 text-[9px] font-mono text-[#71717a] border border-white/[0.04] bg-white/[0.01] rounded-md px-2 py-0.5 ml-1">

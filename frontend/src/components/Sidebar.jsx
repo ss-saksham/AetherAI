@@ -69,6 +69,19 @@ const [showBilling, setShowBilling] =useState(false);
     }
   };
 
+  useEffect(() => {
+    const handleOpenBilling = () => setShowBilling(true);
+    const handleNewChat = () => handleCreateConversation();
+
+    window.addEventListener("open-billing", handleOpenBilling);
+    window.addEventListener("create-new-chat", handleNewChat);
+
+    return () => {
+      window.removeEventListener("open-billing", handleOpenBilling);
+      window.removeEventListener("create-new-chat", handleNewChat);
+    };
+  }, []);
+
   const handleSelectConversation = async (conversation) => {
     setMobileOpen(false);
     dispatch(setSelectedConversation(conversation));

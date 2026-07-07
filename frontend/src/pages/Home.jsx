@@ -8,6 +8,8 @@ import { setUserData } from "../redux/user.slice";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase";
 
+import CommandPalette from "../components/CommandPalette";
+
 function Home() {
   const { userData } = useSelector(state => state.user);
   const dispatch=useDispatch()
@@ -29,6 +31,9 @@ const login=async (token)=>{
 
   return (
     <div className="relative h-screen flex bg-[#0a0a0b] text-[#f4f4f5] overflow-hidden font-sans select-none">
+      {/* Global Command Palette */}
+      <CommandPalette />
+
       {/* Editorial layout container */}
       <Sidebar />
       <ChatArea />
