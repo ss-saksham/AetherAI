@@ -53,6 +53,21 @@ app.use("/api/chat", protect, customProxy(process.env.CHAT_SERVICE));
 app.use("/api/agent", protect, customProxy(process.env.AGENT_SERVICE));
 app.use("/api/billing", protect, customProxy(process.env.BILLING_SERVICE));
 
+app.get("/debug", (req, res) => {
+  res.status(200).json({
+    service: "gateway",
+    status: "ok",
+    env: {
+      PORT: process.env.PORT,
+      CLIENT_URL: process.env.CLIENT_URL,
+      AUTH_SERVICE: process.env.AUTH_SERVICE,
+      CHAT_SERVICE: process.env.CHAT_SERVICE,
+      AGENT_SERVICE: process.env.AGENT_SERVICE,
+      BILLING_SERVICE: process.env.BILLING_SERVICE,
+    }
+  });
+});
+
 app.get("/", (req, res) => {
   res.status(200).json({
     service: "gateway",
