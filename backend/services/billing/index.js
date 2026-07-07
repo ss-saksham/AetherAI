@@ -9,14 +9,15 @@ dotenv.config()
 
 const formatUrl = (url, defaultPort) => {
   if (!url) return url;
-  if (url.includes("localhost") || url.includes("127.0.0.1")) {
-    let cleanUrl = url.replace(/^https?:\/\//, "");
+  const cleanUrl = url.replace(/^https?:\/\//, "");
+  const hostname = cleanUrl.split(":")[0];
+  if (hostname.includes("localhost") || hostname.includes("127.0.0.1") || !hostname.includes(".")) {
     if (!cleanUrl.includes(":")) {
-      cleanUrl = `${cleanUrl}:${defaultPort}`;
+      return `http://${cleanUrl}:${defaultPort}`;
     }
     return `http://${cleanUrl}`;
   }
-  let slug = url.replace(/^https?:\/\//, "").split(":")[0].replace(/\.onrender\.com\/?$/, "");
+  const slug = hostname.replace(/\.onrender\.com\/?$/, "");
   return `https://${slug}.onrender.com`;
 };
 if (process.env.AUTH_SERVICE) process.env.AUTH_SERVICE = formatUrl(process.env.AUTH_SERVICE, 8001);
