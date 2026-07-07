@@ -15,6 +15,11 @@ services:
         generateValue: true
       - key: FIREBASE_SERVICE_ACCOUNT
         sync: false
+      - key: REDIS_URL
+        fromService:
+          name: cortex-redis
+          type: redis
+          property: connectionString
 
   # 2. Chat Service
   - type: web
