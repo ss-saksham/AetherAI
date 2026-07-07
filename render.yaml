@@ -29,8 +29,9 @@ services:
       - key: MONGODB_URL
         sync: false
       - key: REDIS_URL
-        fromDatabase:
+        fromService:
           name: cortex-redis
+          type: redis
           property: connectionString
 
   # 3. Agent Service
@@ -76,8 +77,9 @@ services:
           type: web
           property: host
       - key: REDIS_URL
-        fromDatabase:
+        fromService:
           name: cortex-redis
+          type: redis
           property: connectionString
 
   # 4. Billing Service
@@ -135,8 +137,9 @@ services:
           type: web
           property: host
       - key: REDIS_URL
-        fromDatabase:
+        fromService:
           name: cortex-redis
+          type: redis
           property: connectionString
 
   # 6. Redis Database
