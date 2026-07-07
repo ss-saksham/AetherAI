@@ -4,10 +4,20 @@ import { getAuth, GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
+const getAuthDomain = () => {
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+      return hostname;
+    }
+  }
+  return "cortexai-246e6.firebaseapp.com";
+};
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "cortexai-246e6.firebaseapp.com",
+  authDomain: getAuthDomain(),
   projectId: "cortexai-246e6",
   storageBucket: "cortexai-246e6.firebasestorage.app",
   messagingSenderId: "799536669023",
