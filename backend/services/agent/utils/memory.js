@@ -1,89 +1,59 @@
 import redis from "../../../shared/redis/redis.js";
 import { getConversationHistory } from "./getConv.js";
 
+export const getMemory = async (conversationId) => {
+  const key = `conversation:${conversationId}`;
+  
+  try {
+    const cached = await redis.get(key);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+  } catch (error) {
+    console.warn(`[Redis warning] cache get failed: ${error.message}`);
+  }
 
-export const getMemory =
-async(conversationId)=>{
+  const messages = await getConversationHistory(conversationId);
 
- const key =
- `conversation:${conversationId}`;
+  try {
+    await redis.set(
+      key,
+      JSON.stringify(messages),
+      "EX",
+      86400
+    );
+  } catch (error) {
+    console.warn(`[Redis warning] cache set failed: ${error.message}`);
+  }
 
- const cached =
- await redis.get(key);
-
- if(cached){
-
-  return JSON.parse(
-   cached
-  );
-
- }
-
- const messages =
- await getConversationHistory(
-  conversationId
- );
-
- await redis.set(
-
-  key,
-
-  JSON.stringify(
-   messages
-  ),
-
-  "EX",
-
-  86400
-
- );
-
- return messages;
-
+  return messages;
 };
 
+export const addMessage = async (conversationId, role, content) => {
+  const key = `conversation:${conversationId}`;
+  let messages = [];
 
-export const addMessage =
-async(
- conversationId,
- role,
- content
-)=>{
+  try {
+    const existing = await redis.get(key);
+    messages = existing ? JSON.parse(existing) : [];
+  } catch (error) {
+    console.warn(`[Redis warning] addMessage read failed, defaulting to empty stack: ${error.message}`);
+  }
 
- const key =
- `conversation:${conversationId}`;
+  messages.push({ role, content });
 
- const existing =
- await redis.get(key);
+  if (messages.length > 20) {
+    messages.shift();
+  }
 
- const messages =
- existing
- ? JSON.parse(existing)
- : [];
-
- messages.push({
-  role,
-  content
- });
-
- if(messages.length > 20){
-
-  messages.shift();
-
- }
-
- await redis.set(
-
-  key,
-
-  JSON.stringify(
-   messages
-  ),
-
-  "EX",
-
-  86400
-
- );
-
-}
+  try {
+    await redis.set(
+      key,
+      JSON.stringify(messages),
+      "EX",
+      86400
+    );
+  } catch (error) {
+    console.warn(`[Redis warning] addMessage save failed: ${error.message}`);
+  }
+};

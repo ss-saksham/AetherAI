@@ -12,49 +12,48 @@ const LIMITS = {
 };
 
 export const checkAgentLimit = async (userId, agent) => {
-
   const max = LIMITS[agent] ?? LIMITS.chat;
-
   const key = `rate:${agent}:${userId}`;
 
-  const count = await redis.incr(key);
+  try {
+    const count = await redis.incr(key);
 
-  if (count === 1) {
-    await redis.expire(key, 60);
-  }
+    if (count === 1) {
+      await redis.expire(key, 60);
+    }
 
-  const ttl = await redis.ttl(key);
+    const ttl = await redis.ttl(key);
 
-  if (count > max) {
+    if (count > max) {
+      const minutes = Math.floor(ttl / 60);
+      const seconds = ttl % 60;
+      const time = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 
-    const minutes = Math.floor(ttl / 60);
-    const seconds = ttl % 60;
+      const error = new Error(`Rate limit exceeded for ${agent}.`);
+      error.status = 429;
+      error.data = {
+        success: false,
+        agent,
+        limit: max,
+        remainingTime: ttl,
+        retryAfter: time,
+        message: `You have reached the ${agent} limit (${max} requests/minute). Try again in ${time}.`
+      };
+      throw error;
+    }
 
-    const time =
-      minutes > 0
-        ? `${minutes}m ${seconds}s`
-        : `${seconds}s`;
-
-    const error = new Error(
-      `Rate limit exceeded for ${agent}.`
-    );
-
-    error.status = 429;
-
-    error.data = {
-      success: false,
-      agent,
-      limit: max,
-      remainingTime: ttl,
-      retryAfter: time,
-      message: `You have reached the ${agent} limit (${max} requests/minute). Try again in ${time}.`
+    return {
+      remaining: max - count,
+      limit: max
     };
-
-    throw error;
+  } catch (error) {
+    if (error.status === 429) {
+      throw error;
+    }
+    console.warn(`[Redis warning] rate limiter failed, bypassing checking: ${error.message}`);
+    return {
+      remaining: max,
+      limit: max
+    };
   }
-
-  return {
-    remaining: max - count,
-    limit: max
-  };
 };
