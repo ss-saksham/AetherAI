@@ -7,7 +7,7 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Copy, Check } from "lucide-react";
 import { useSelector } from "react-redux";
 
-function MessageBubble({ role, content, images }) {
+function MessageBubble({ role, content, images = [] }) {
   const isUser = role === "user";
   const [lightboxSrc, setLightboxSrc] = useState(null);
   const [copiedCode, setCopiedCode] = useState("");
