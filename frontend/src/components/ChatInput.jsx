@@ -288,293 +288,108 @@ catch(error){
   };
 
   return (
-   <div className={`w-full overflow-hidden px-3 md:px-5 py-4 border-t border-white/[0.05] transition-all duration-300
-      ${theme === "neo-glass" ? "bg-transparent border-t-transparent" : "bg-[#0c0d12]/75 backdrop-blur-md"}`}>
-      <div className={`flex flex-col gap-2 rounded-2xl px-4 pt-3.5 pb-3 transition-all duration-300
-        ${theme === "neo-glass"
-          ? "max-w-3xl mx-auto w-full bg-[#11131a] border border-white/[0.06] shadow-[0_8px_32px_rgba(0,0,0,0.4)] focus-within:border-violet-500/40 focus-within:shadow-[0_0_30px_rgba(139,92,246,0.1)]"
-          : "bg-white/[0.02] hover:bg-white/[0.03] focus-within:bg-white/[0.04] border border-white/[0.07] focus-within:border-indigo-500/40 shadow-[0_4px_20px_rgba(0,0,0,0.15)] focus-within:shadow-[0_0_24px_rgba(99,102,241,0.08)]"
-        }`}>
+    <div className="w-full bg-transparent px-6 pb-6 pt-3 select-none">
+      <div className="max-w-2xl mx-auto w-full bg-[#121214] border border-white/[0.04] rounded-xl flex flex-col focus-within:border-white/[0.08] transition-all duration-200 shadow-sm">
+        
+        {/* Top toolbar: Monochromatic Agent Switcher */}
+        <div className="flex gap-4.5 px-4 pt-3 pb-1 border-b border-white/[0.02] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden select-none">
+          {agents.map((agent) => {
+            const isActive = selectedAgent === agent.id;
+            return (
+              <button
+                key={agent.id}
+                onClick={() => setSelectedAgent(agent.id)}
+                className={`text-[9.5px] font-bold uppercase tracking-wider transition-colors duration-150 cursor-pointer bg-transparent border-none pb-2 relative ${
+                  isActive ? "text-white" : "text-[#71717a] hover:text-[#a1a1aa]"
+                }`}
+              >
+                {agent.label}
+                {isActive && (
+                  <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#f4f4f5] rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </div>
 
+        {/* Textarea Workspace */}
+        <div className="flex flex-col px-4 pt-3 pb-2">
+          {selectedFile && (
+            <div className="mb-2.5 flex items-center gap-2 bg-white/[0.02] border border-white/[0.04] rounded-md px-2 py-1.5 w-fit">
+              <FileText size={12} className="text-[#a1a1aa]" />
+              <span className="text-[10px] font-mono text-[#a1a1aa] truncate max-w-[150px]">{selectedFile.name}</span>
+              <button
+                onClick={() => {
+                  setSelectedFile(null);
+                  fileRef.current.value = "";
+                }}
+                className="cursor-pointer bg-transparent border-none text-[#71717a] hover:text-white transition-colors"
+              >
+                <X size={10} />
+              </button>
+            </div>
+          )}
 
-    <div className="flex w-[80%] gap-2 pr-2 flex-wrap">
-
-    {agents.map((agent) => {
-
-      const Icon = agent.icon;
-      const isActive = selectedAgent === agent.id;
-
-      return (
-
-        <button
-          key={agent.id}
-          onClick={() => setSelectedAgent(agent.id)}
-          className={`
-            flex-shrink-0
-            inline-flex
-            items-center
-            gap-2
-            px-4
-            py-2
-            rounded-[14px]
-            text-xs
-            font-bold
-            border
-            transition-all
-            duration-300
-            cursor-pointer
-            ${
-              isActive
-                ? "bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600 text-white border-transparent shadow-[0_2px_12px_rgba(99,102,241,0.3)] scale-[1.01]"
-                : "bg-white/[0.015] text-slate-400 border-white/[0.04] hover:bg-white/[0.04] hover:text-slate-200"
-            }
-          `}
-        >
-
-          <Icon
-            size={13.5}
-            className={
-              isActive
-                ? "text-white"
-                : "text-slate-500"
-            }
+          <textarea
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholders[selectedAgent]}
+            rows={2}
+            disabled={isLoading}
+            className="w-full bg-transparent outline-none resize-none text-[13px] text-[#f4f4f5] placeholder:text-[#52525b] leading-relaxed [scrollbar-width:none] [&::-webkit-scrollbar]:hidden disabled:opacity-50"
           />
-
-          {agent.label}
-
-        </button>
-
-      );
-
-    })}
-
-
-</div>
-
-{
-
-selectedFile && (
-
-<div className="my-3">
-
-<div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2">
-
-{
-
-selectedFile.type==="application/pdf"
-
-?
-
-<FileText
-
-size={16}
-
-className="text-red-400"
-
-/>
-
-:
-
-
-
-selectedFile?.type.startsWith("image/")
-
-&&
-
-<img
-
-src={URL.createObjectURL(selectedFile)}
-
-className="h-10 w-10 rounded-xl object-cover mt-3"
-
-/>
-
-
-
-}
-
-<div>
-
-<p className="text-xs text-white">
-
-{
-
-selectedFile.name
-
-}
-
-</p>
-
-<p className="text-[10px] text-slate-500">
-
-{
-
-Math.ceil(
-
-selectedFile.size/
-
-1024
-
-)
-
-}
-
-KB
-
-</p>
-
-</div>
-
-<button
-
-onClick={()=>{
-
-setSelectedFile(null);
-
-fileRef.current.value="";
-
-}}
-
-className="ml-2"
-
->
-
-<X
-
-size={14}
-
-className="text-slate-500 hover:text-white"
-
-/>
-
-</button>
-
-</div>
-
-</div>
-
-)
-}
-
-
-        {/* Textarea */}
-        <textarea
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={
-placeholders[selectedAgent]
-}
-          rows={3}
-          disabled={isLoading}
-          className="w-full bg-transparent outline-none resize-none text-[14px] text-slate-200 placeholder:text-slate-600 leading-relaxed [scrollbar-width:none] [&::-webkit-scrollbar]:hidden disabled:opacity-50"
-        />
-
-        {/* Bottom row */}
-        <div className="flex items-center justify-between">
-
-          {/* Left — attach + mic */}
-          <div className="flex items-center gap-1">
-  <input
-
-ref={fileRef}
-
-type="file"
-
-hidden
-
-accept=".pdf,image/*"
-
-onChange={(e)=>{
-
-const file =
-e.target.files[0];
-
-if(file){
-
-setSelectedFile(file);
-
-}
-
-}}
-
-/>
-            <button className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-600 hover:text-slate-400 hover:bg-white/[0.05] border border-transparent hover:border-white/[0.06] transition-all duration-150 bg-transparent cursor-pointer"
-            onClick={()=>
-fileRef.current.click()
-}
+        </div>
+
+        {/* Bottom Workspace Actions */}
+        <div className="flex items-center justify-between px-4 pb-3 pt-1 select-none">
+          <div className="flex items-center gap-1.5">
+            <input
+              ref={fileRef}
+              type="file"
+              hidden
+              accept=".pdf,image/*"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) setSelectedFile(file);
+              }}
+            />
+            
+            <button
+              onClick={() => fileRef.current.click()}
+              className="flex items-center justify-center w-7 h-7 rounded-md text-[#71717a] hover:text-[#f4f4f5] hover:bg-white/[0.03] transition-colors duration-150 bg-transparent border-none cursor-pointer"
+              title="Attach media"
             >
-              <Paperclip size={14} />
+              <Paperclip size={13} />
             </button>
-           <button
 
-onClick={toggleMic}
+            <button
+              onClick={toggleMic}
+              className={`flex items-center justify-center w-7 h-7 rounded-md transition-colors duration-150 cursor-pointer border-none bg-transparent ${
+                isListening ? "text-red-400 bg-red-500/10" : "text-[#71717a] hover:text-[#f4f4f5] hover:bg-white/[0.03]"
+              }`}
+              title="Voice input"
+            >
+              {isListening ? <MicOff size={13} /> : <Mic size={13} />}
+            </button>
 
-className={`
-
-flex
-
-items-center
-
-justify-center
-
-w-8
-
-h-8
-
-rounded-lg
-
-transition-all
-
-cursor-pointer
-
-${
-
-isListening
-
-?
-
-"bg-red-500 text-white"
-
-:
-
-"text-slate-600 hover:bg-white/[0.05]"
-
-}
-
-`}
-
->
-
-{
-isListening
-?
-<MicOff size={14}/>
-:
-<Mic size={14}/>
-}
-</button>
-
-            {/* Model Switcher Pill */}
-            <div className="flex items-center ml-2 bg-white/[0.03] border border-white/[0.06] rounded-full p-0.5 select-none">
+            {/* Quiet Monospace Model Switcher */}
+            <div className="flex items-center gap-2 text-[9px] font-mono text-[#71717a] border border-white/[0.04] bg-white/[0.01] rounded-md px-2 py-0.5 ml-1">
               <button
                 type="button"
                 onClick={() => setSelectedModel("gemini")}
-                className={`px-3.5 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
-                  selectedModel === "gemini"
-                    ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-[0_2px_8px_rgba(99,102,241,0.25)]"
-                    : "text-slate-500 hover:text-slate-300"
+                className={`font-bold transition-colors cursor-pointer bg-transparent border-none uppercase ${
+                  selectedModel === "gemini" ? "text-white" : "hover:text-[#a1a1aa]"
                 }`}
               >
                 Gemini
               </button>
+              <span className="opacity-30">|</span>
               <button
                 type="button"
                 onClick={() => setSelectedModel("groq")}
-                className={`px-3.5 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
-                  selectedModel === "groq"
-                    ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-[0_2px_8px_rgba(99,102,241,0.25)]"
-                    : "text-slate-500 hover:text-slate-300"
+                className={`font-bold transition-colors cursor-pointer bg-transparent border-none uppercase ${
+                  selectedModel === "groq" ? "text-white" : "hover:text-[#a1a1aa]"
                 }`}
               >
                 Groq
@@ -582,25 +397,25 @@ isListening
             </div>
           </div>
 
-          {/* Right — send / stop */}
+          {/* Send Action */}
           <button
             onClick={handleSend}
             disabled={!isLoading && !value.trim()}
-            className={`flex items-center justify-center w-8 h-8 rounded-lg border-none cursor-pointer transition-all duration-150
-              ${isLoading
-                ? "bg-white text-[#0d0f14] hover:bg-slate-200"
+            className={`flex items-center justify-center w-7 h-7 rounded-md border-none cursor-pointer transition-all duration-150 ${
+              isLoading
+                ? "bg-[#f4f4f5] text-[#09090b]"
                 : value.trim()
-                ? "bg-gradient-to-br from-indigo-500 to-violet-700 hover:opacity-90 text-white"
-                : "bg-white/[0.05] text-slate-600 cursor-not-allowed"
-              }`}
+                ? "bg-[#f4f4f5] text-[#09090b] hover:bg-white active:scale-[0.98]"
+                : "bg-white/[0.02] text-[#52525b] cursor-not-allowed"
+            }`}
           >
-            {isLoading ? <Square size={12} fill="currentColor" /> : <Send size={14} />}
+            {isLoading ? <Square size={10} fill="currentColor" /> : <Send size={11} />}
           </button>
-
         </div>
+
       </div>
 
-      <p className="text-center text-[10.5px] text-slate-700 mt-2.5">
+      <p className="text-center text-[9px] font-mono text-[#52525b] mt-3">
         CortexAI can make mistakes. Verify important info.
       </p>
     </div>

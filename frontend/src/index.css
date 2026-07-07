@@ -1,63 +1,43 @@
 @import "tailwindcss";
 
+:root {
+  --font-sans: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
+  background-color: #09090b;
+  color: #f4f4f5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes float-slow {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(40px, -60px) scale(1.1);
-  }
-  66% {
-    transform: translate(-30px, 30px) scale(0.95);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-}
-@keyframes float-slow-reverse {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(-40px, 50px) scale(0.9);
-  }
-  66% {
-    transform: translate(30px, -30px) scale(1.05);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-}
-@keyframes logo-glow {
-  0%, 100% {
-    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.4));
-    transform: translateY(0px) scale(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 25px rgba(139, 92, 246, 0.65));
-    transform: translateY(-5px) scale(1.02);
-  }
+/* Custom Scrollbars (Calm & Subtle) */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
 
-.animate-float-1 {
-  animation: float-slow 22s infinite ease-in-out;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.animate-float-2 {
-  animation: float-slow-reverse 18s infinite ease-in-out;
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
 }
 
-.animate-logo-glow {
-  animation: logo-glow 5s infinite ease-in-out;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.16);
 }
 
-.bg-grid-pattern {
-  background-size: 50px 50px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+/* Focus outline overrides to clean up browser default outlines */
+input:focus, textarea:focus, select:focus, button:focus {
+  outline: none;
+}
+
+/* Code block highlight tweak */
+pre code {
+  font-family: var(--font-mono) !important;
 }
