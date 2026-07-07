@@ -1,15 +1,14 @@
 import proxy from "express-http-proxy";
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  process.env.CLIENT_URL
-].filter(Boolean);
-
 export const isOriginAllowed = (origin) => {
-  if (!origin) return false;
-  return allowedOrigins.includes(origin) || 
-         origin.endsWith(".vercel.app") || 
-         origin.includes("localhost");
+  if (!origin) return true;
+  const lowerOrigin = origin.toLowerCase().trim();
+  const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.toLowerCase().trim() : null;
+  
+  return lowerOrigin.includes("localhost") || 
+         lowerOrigin.includes("127.0.0.1") || 
+         lowerOrigin.endsWith(".vercel.app") || 
+         (clientUrl && (lowerOrigin === clientUrl || lowerOrigin === clientUrl + "/"));
 };
 
 export const customProxy = (serviceUrl, options = {}) => {
