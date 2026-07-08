@@ -20,6 +20,14 @@ function Home() {
     try {
       const { data } = await api.post(`/api/auth/login`, { token });
       dispatch(setUserData(data.user));
+      
+      // Force window focus and DOM reflow to bypass browser popup paint-suspension bugs
+      setTimeout(() => {
+        window.focus();
+        if (typeof document !== "undefined") {
+          const _ = document.body?.offsetHeight;
+        }
+      }, 50);
     } catch (error) {
       console.log(error);
     }
