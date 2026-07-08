@@ -25,18 +25,27 @@ export default function ArtifactPanel() {
   const jsFile     = artifact?.files?.find(f => f.name === "script.js");
   const canPreview = Boolean(htmlFile);
 
-  const previewDoc = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<style>${cssFile?.content || ""}</style>
-</head>
-<body>
-${htmlFile?.content || ""}
-<script>${jsFile?.content || ""}<\/script>
-</body>
-</html>`;
+  let previewDoc = htmlFile?.content || "";
+  if (canPreview) {
+    // Replace stylesheet link with inline CSS content
+    previewDoc = previewDoc.replace(
+      /<link[^>]*href=["']style\.css["'][^>]*>/gi,
+      `<style>${cssFile?.content || ""}</style>`
+    );
+
+    // Inline the script content into the original script tag to maintain compiler attributes (like type="text/babel")
+    const scriptRegex = /<script([^>]*)\bsrc=["']script\.js["']([^>]*)><\/script>/gi;
+    if (scriptRegex.test(previewDoc)) {
+      previewDoc = previewDoc.replace(scriptRegex, (match, p1, p2) => {
+        return `<script${p1}${p2}>${jsFile?.content || ""}<\/script>`;
+      });
+    } else {
+      previewDoc = previewDoc.replace(
+        "</body>",
+        `<script>${jsFile?.content || ""}<\/script></body>`
+      );
+    }
+  }
 
   const handleCopy = () => {
     navigator.clipboard.writeText(file?.content || "");
