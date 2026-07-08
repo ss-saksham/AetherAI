@@ -8,12 +8,16 @@ const formatUrl = (url, defaultPort) => {
   if (!url) return url;
   const cleanUrl = url.replace(/^https?:\/\//, "");
   const hostname = cleanUrl.split(":")[0];
-  if (hostname.includes("localhost") || hostname.includes("127.0.0.1") || !hostname.includes(".")) {
+  
+  // If it's a local development address, keep it as local http
+  if (hostname.includes("localhost") || hostname.includes("127.0.0.1")) {
     if (!cleanUrl.includes(":")) {
       return `http://${cleanUrl}:${defaultPort}`;
     }
     return `http://${cleanUrl}`;
   }
+  
+  // Map Render service slugs to their public HTTPS URLs to bypass internal region DNS failures
   const slug = hostname.replace(/\.onrender\.com\/?$/, "");
   return `https://${slug}.onrender.com`;
 };
