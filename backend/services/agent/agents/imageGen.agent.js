@@ -58,72 +58,51 @@ ${state.prompt}
     const enhancedPrompt =
       promptResponse.content.trim();
 
-    const imageUrl =
-      `https://image.pollinations.ai/prompt/${encodeURIComponent(
-        enhancedPrompt
-      )}`;
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}`;
+    let finalUrl = imageUrl;
+    let fallbackUsed = false;
 
-    const imageResponse =
-      await axios.get(
-        imageUrl,
-        {
-          responseType:
-            "arraybuffer"
-        }
-      );
+    try {
+      const imageResponse = await axios.get(imageUrl, {
+        responseType: "arraybuffer"
+      });
 
-    const imageBuffer =
-      Buffer.from(
-        imageResponse.data
-      );
+      const imageBuffer = Buffer.from(imageResponse.data);
+      const fileName = `image-${Date.now()}.png`;
 
-    const fileName =
-      `image-${Date.now()}.png`;
-
-    await uploadToS3(
-      imageBuffer,
-      fileName,
-      "image/png"
-    );
-
-    const downloadUrl =
-      await getDownloadUrl(
+      await uploadToS3(
+        imageBuffer,
         fileName,
-        24*60*60
+        "image/png"
       );
+
+      finalUrl = await getDownloadUrl(
+        fileName,
+        24 * 60 * 60
+      );
+    } catch (s3Error) {
+      console.warn("⚠️ S3 Upload/URL sign failed. Falling back to direct Pollinations URL:", s3Error.message);
+      fallbackUsed = true;
+    }
 
     return {
-
       ...state,
-
-     response: `
+      response: `
 # 🖼️ Image Generated Successfully
 
-![Generated Image](${downloadUrl})
+![Generated Image](${finalUrl})
 
-📥 [Download Image](${downloadUrl})
+📥 [Download Image](${finalUrl})
 
-⏳ Link expires in 10 minutes.
-`
-
+${fallbackUsed ? "⚠️ *Note: Rendering direct feed due to S3 storage configuration limits.*" : "⏳ *Link expires in 24 hours.*"}
+`.trim()
     };
 
   } catch (error) {
-
-    console.log(
-      "Image Agent Error:",
-      error
-    );
-
+    console.log("Image Agent Error:", error);
     return {
-
       ...state,
-
-      response:
-        "❌ Failed to generate image."
-
+      response: "❌ Failed to generate image."
     };
-
   }
-
 };
