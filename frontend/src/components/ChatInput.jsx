@@ -25,6 +25,15 @@ const recognitionRef = useRef(null);
    const { theme } = useSelector(state => state.user);
    const { isLoading } = useSelector(state => state.message);
 const fileRef = useRef(null);
+const textareaRef = useRef(null);
+
+useEffect(() => {
+  const textarea = textareaRef.current;
+  if (textarea) {
+    textarea.style.height = "auto";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`;
+  }
+}, [value]);
 
 const [
 
@@ -423,13 +432,14 @@ catch(error){
           )}
 
           <textarea
+            ref={textareaRef}
             value={value}
             onChange={e => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={placeholders[selectedAgent]}
-            rows={2}
+            rows={1}
             disabled={isLoading}
-            className="w-full bg-transparent outline-none resize-none text-[13px] text-[#f4f4f5] placeholder:text-[#52525b] leading-relaxed [scrollbar-width:none] [&::-webkit-scrollbar]:hidden disabled:opacity-50"
+            className="w-full bg-transparent outline-none resize-none text-[13px] text-[#f4f4f5] placeholder:text-[#52525b] leading-relaxed max-h-[160px] overflow-y-auto pr-1 disabled:opacity-50 transition-all duration-100"
           />
         </div>
 

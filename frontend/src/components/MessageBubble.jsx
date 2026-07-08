@@ -52,7 +52,7 @@ function MessageBubble({ role, content, images = [] }) {
     ) : null,
     code({ className, children }) {
       const value = String(children).replace(/^\s*```[^\n]*\n/, "").replace(/\n```\s*$/, "").trim();
-      if (!className) return <code className="px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.04] text-neutral-200 font-mono text-[11.5px]">{value}</code>;
+      if (!className) return <code className="px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.04] text-neutral-200 font-mono text-[11.5px] break-all whitespace-pre-wrap">{value}</code>;
       const language = className.replace("language-", "");
       return (
         <div className="my-3.5 overflow-hidden rounded-lg border border-white/[0.04] bg-[#121214]">
