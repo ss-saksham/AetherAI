@@ -50,19 +50,10 @@ function MessageBubble({ role, content, images = [] }) {
     img: ({ src }) => src ? (
       <img src={src} loading="lazy" onClick={() => setLightboxSrc(src)} onError={(e) => e.currentTarget.remove()} className="w-36 h-24 rounded object-cover cursor-pointer border border-white/[0.08]" />
     ) : null,
-    code({ node, inline, className, children, ...props }) {
+    code({ className, children }) {
       const value = String(children).replace(/^\s*```[^\n]*\n/, "").replace(/\n```\s*$/, "").trim();
-      const isInline = inline || !value.includes("\n");
-
-      if (isInline) {
-        return (
-          <code className="px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.04] text-neutral-200 font-mono text-[11.5px] break-all whitespace-pre-wrap">
-            {value}
-          </code>
-        );
-      }
-
-      const language = className ? className.replace("language-", "") : "text";
+      if (!className) return <code className="px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.04] text-neutral-200 font-mono text-[11.5px]">{value}</code>;
+      const language = className.replace("language-", "");
       return (
         <div className="my-3.5 overflow-hidden rounded-lg border border-white/[0.04] bg-[#121214]">
           <div className="flex items-center justify-between bg-[#161619] border-b border-white/[0.04] px-4 py-2 select-none">
@@ -89,7 +80,7 @@ function MessageBubble({ role, content, images = [] }) {
               {isUser ? "USER" : "AGENT"}
             </span>
           </div>
-          <div className="flex-1 min-w-0 leading-relaxed text-[13px] text-[#e4e4e7] overflow-hidden break-words">
+          <div className="flex-1 min-w-0 leading-relaxed text-[13px] text-[#e4e4e7]">
             {images && images.length > 0 && (
               <div className="flex flex-wrap gap-2.5 mb-2.5">
                 {images.map((img, i) => (
@@ -131,7 +122,7 @@ function MessageBubble({ role, content, images = [] }) {
             {isUser ? "USER" : "AGENT"}
           </span>
         </div>
-        <div className="flex-1 min-w-0 leading-relaxed text-[13px] text-[#e4e4e7] overflow-hidden break-words">
+        <div className="flex-1 min-w-0 leading-relaxed text-[13px] text-[#e4e4e7]">
           {images && images.length > 0 && (
             <div className="flex flex-wrap gap-2.5 mb-2.5">
               {images.map((img, i) => (
