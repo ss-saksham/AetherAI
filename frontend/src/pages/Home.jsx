@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaGoogle } from "react-icons/fa";
 import ArtifactPanel from "../components/ArtifactPanel";
@@ -5,7 +6,7 @@ import ChatArea from "../components/ChatArea";
 import Sidebar from "../components/Sidebar";
 import api from "../utils/axios";
 import { setUserData } from "../redux/user.slice";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase";
 
 import CommandPalette from "../components/CommandPalette";
@@ -13,20 +14,47 @@ import CommandPalette from "../components/CommandPalette";
 function Home() {
   const { userData } = useSelector(state => state.user);
   const dispatch=useDispatch()
-const login=async (token)=>{
-  try {
-    const {data}=await api.post(`/api/auth/login`,{token})
-    dispatch(setUserData(data.user))
-  } catch (error) {
-    console.log(error)
+  
+  const login=async (token)=>{
+    try {
+      const {data}=await api.post(`/api/auth/login`,{token})
+      dispatch(setUserData(data.user))
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
-  const handleGoogleLogin =async () => {
-     const result =
-     await signInWithPopup(auth,googleProvider);
-    
-     const token =await result.user.getIdToken();
-     await login(token)
+
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          const token = await result.user.getIdToken();
+          await login(token);
+        }
+      } catch (error) {
+        console.error("Redirect login error:", error);
+      }
+    };
+    handleRedirectResult();
+  }, []);
+
+  const handleGoogleLogin = async () => {
+    try {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+
+      if (isMobile) {
+        await signInWithRedirect(auth, googleProvider);
+      } else {
+        const result = await signInWithPopup(auth, googleProvider);
+        const token = await result.user.getIdToken();
+        await login(token);
+      }
+    } catch (error) {
+      console.error("Google Login Error:", error);
+    }
   };
 
   return (
