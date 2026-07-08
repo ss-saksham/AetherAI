@@ -240,23 +240,32 @@ setSelectedFile(null)
       } catch (err) {
         console.log("Error updating credits", err);
       }
-     dispatch(
-  addMessage({
-    role: "assistant",
-    content: data.answer,
-    images:data.images
-  })
-);
 
-console.log(data)
+      if (data.success === false) {
+        dispatch(
+          addMessage({
+            role: "assistant",
+            content: `⚠️ **${data.title || "Error"}**\n\n${data.message || "An error occurred while processing the request."}`
+          })
+        );
+      } else {
+        dispatch(
+          addMessage({
+            role: "assistant",
+            content: data.answer,
+            images: data.images,
+            artifacts: data.artifacts || []
+          })
+        );
 
-if(data.artifacts){
-  dispatch(
-    setArtifacts(
-      data.artifacts
-    )
-  );
-}}
+        if (data.artifacts) {
+          dispatch(
+            setArtifacts(
+              data.artifacts
+            )
+          );
+        }
+      }}
 catch(error){
 
   setBanner({

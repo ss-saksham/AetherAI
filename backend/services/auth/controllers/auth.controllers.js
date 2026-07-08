@@ -213,15 +213,17 @@ export const deductCredits = async (req, res) => {
 
     const requiredCredits = COST[agent] || 1;
 
-    if (user.credits < requiredCredits) {
+    if (user.plan !== "pro" && user.credits < requiredCredits) {
       return res.status(400).json({
         success: false,
         message: "Not enough credits."
       });
     }
 
-    user.credits -= requiredCredits;
-    await user.save();
+    if (user.plan !== "pro") {
+      user.credits -= requiredCredits;
+      await user.save();
+    }
 
     let sessionId;
     try {
