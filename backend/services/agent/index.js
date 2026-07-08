@@ -22,6 +22,7 @@ if (process.env.CHAT_SERVICE) process.env.CHAT_SERVICE = formatUrl(process.env.C
 
 const app = express();
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 const port=process.env.PORT
 
 app.get("/", (req, res) => {

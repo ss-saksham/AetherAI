@@ -1,5 +1,7 @@
 import axios from "axios";
 import { getModel } from "../utils/model.js";
+import fs from "fs";
+import path from "path";
 
 import { uploadToS3 } from "../utils/uploadToS3.js";
 import { getDownloadUrl } from "../utils/getDownloadUrl.js";
@@ -70,18 +72,29 @@ ${state.prompt}
       const imageBuffer = Buffer.from(imageResponse.data);
       const fileName = `image-${Date.now()}.png`;
 
-      await uploadToS3(
-        imageBuffer,
-        fileName,
-        "image/png"
-      );
+      try {
+        await uploadToS3(
+          imageBuffer,
+          fileName,
+          "image/png"
+        );
 
-      finalUrl = await getDownloadUrl(
-        fileName,
-        24 * 60 * 60
-      );
-    } catch (s3Error) {
-      console.warn("⚠️ S3 Upload/URL sign failed. Falling back to direct Pollinations URL:", s3Error.message);
+        finalUrl = await getDownloadUrl(
+          fileName,
+          24 * 60 * 60
+        );
+      } catch (s3Error) {
+        console.warn("⚠️ S3 Upload/URL sign failed. Falling back to local storage:", s3Error.message);
+        if (!fs.existsSync("uploads")) {
+          fs.mkdirSync("uploads");
+        }
+        fs.writeFileSync(path.join("uploads", fileName), imageBuffer);
+        finalUrl = `${state.gatewayUrl || "http://localhost:8000"}/api/agent/uploads/${fileName}`;
+        fallbackUsed = true;
+      }
+    } catch (downloadError) {
+      console.warn("⚠️ Direct buffer download failed. Routing public URL feed:", downloadError.message);
+      finalUrl = imageUrl;
       fallbackUsed = true;
     }
 
@@ -94,7 +107,7 @@ ${state.prompt}
 
 📥 [Download Image](${finalUrl})
 
-${fallbackUsed ? "⚠️ *Note: Rendering direct feed due to S3 storage configuration limits.*" : "⏳ *Link expires in 24 hours.*"}
+${fallbackUsed ? "⚠️ *Note: Served via dynamic fail-safe routing due to S3 storage configuration limits.*" : "⏳ *Link expires in 24 hours.*"}
 `.trim()
     };
 

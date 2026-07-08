@@ -1,5 +1,7 @@
 import PDFDocument from "pdfkit";
 import { getModel } from "../utils/model.js";
+import fs from "fs";
+import path from "path";
 
 import { uploadToS3 } from "../utils/uploadToS3.js";
 import { getDownloadUrl } from "../utils/getDownloadUrl.js";
@@ -162,32 +164,40 @@ Rules:
     const pdfBuffer =
       Buffer.concat(chunks);
 
-    await uploadToS3(
-      pdfBuffer,
-      fileName,
-      "application/pdf"
-    );
+    let downloadUrl;
+    let localFallbackUsed = false;
+    try {
+      await uploadToS3(
+        pdfBuffer,
+        fileName,
+        "application/pdf"
+      );
 
-    const downloadUrl =
-      await getDownloadUrl(
+      downloadUrl = await getDownloadUrl(
         fileName,
         24*60*60
       );
+    } catch (s3Error) {
+      console.warn("⚠️ S3 Upload/URL sign failed. Falling back to local storage:", s3Error.message);
+      if (!fs.existsSync("uploads")) {
+        fs.mkdirSync("uploads");
+      }
+      fs.writeFileSync(path.join("uploads", fileName), pdfBuffer);
+      downloadUrl = `${state.gatewayUrl || "http://localhost:8000"}/api/agent/uploads/${fileName}`;
+      localFallbackUsed = true;
+    }
 
     return {
-
       ...state,
-
-response: `
+      response: `
 # ✅ PDF Generated Successfully
 
 📄 **${generatedTitle}**
 
 📥 [Download PDF](${downloadUrl})
 
-⏳ Link expires in 10 minutes.
+${localFallbackUsed ? "⚠️ *Note: Served from dynamic microservice storage due to S3 configurations.*" : "⏳ *Link expires in 24 hours.*"}
 `.trim()
-
     };
 
   } catch (error) {

@@ -351,31 +351,41 @@ const buffer =
     outputType: "nodebuffer"
   });
 
-await uploadToS3(
-  buffer,
-  fileName,
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-);
+    let downloadUrl;
+    let localFallbackUsed = false;
+    try {
+      await uploadToS3(
+        buffer,
+        fileName,
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      );
 
-const downloadUrl =
-  await getDownloadUrl(
-    fileName,
-    24*60*60
-  );
+      downloadUrl = await getDownloadUrl(
+        fileName,
+        24*60*60
+      );
+    } catch (s3Error) {
+      console.warn("⚠️ S3 Upload/URL sign failed. Falling back to local storage:", s3Error.message);
+      if (!fs.existsSync("uploads")) {
+        fs.mkdirSync("uploads");
+      }
+      fs.writeFileSync(path.join("uploads", fileName), buffer);
+      downloadUrl = `${state.gatewayUrl || "http://localhost:8000"}/api/agent/uploads/${fileName}`;
+      localFallbackUsed = true;
+    }
 
     return {
-  ...state,
-
-  response: `
+      ...state,
+      response: `
 # ✅ Presentation Generated Successfully
 
 📊 **${parsed.title}**
 
 📥 [Download PPT](${downloadUrl})
 
-⏳ Link expires in 10 minutes.
-`
-};
+${localFallbackUsed ? "⚠️ *Note: Served from dynamic microservice storage due to S3 configurations.*" : "⏳ *Link expires in 24 hours.*"}
+`.trim()
+    };
   } catch (error) {
     console.log("PPT Agent Error:", error);
     return { ...state, response: "Failed to generate presentation." };

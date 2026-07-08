@@ -38,13 +38,18 @@ export const chat = async (req, res, next) => {
       res.write(" "); // Send space byte to keep connection active
     }, 12000); // 12 seconds interval (well under Render's 30s threshold)
 
+    const protocol = req.secure || req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
+    const host = req.headers["x-forwarded-host"] || req.headers.host;
+    const gatewayUrl = `${protocol}://${host}`;
+
     const result = await graph.invoke({
       prompt,
       conversationId,
       userId: req.headers["x-user-id"],
       agent,
       model,
-      file: req.file
+      file: req.file,
+      gatewayUrl
     });
 
     if (keepAliveInterval) {
