@@ -27,22 +27,43 @@ export default function ArtifactPanel() {
 
   let previewDoc = htmlFile?.content || "";
   if (canPreview) {
+    // Detect if Babel is needed for JSX or ES modules imports/exports
+    const needsBabel = jsFile?.content && (
+      jsFile.content.includes("React") ||
+      jsFile.content.includes("jsx") ||
+      jsFile.content.includes("import ") ||
+      /<[a-zA-Z]/.test(jsFile.content)
+    );
+
+    // If Babel is needed and not loaded in head, inject the script tag
+    if (needsBabel && !previewDoc.includes("babel.min.js")) {
+      previewDoc = previewDoc.replace(
+        "</head>",
+        `<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script></head>`
+      );
+    }
+
     // Replace stylesheet link with inline CSS content
     previewDoc = previewDoc.replace(
       /<link[^>]*href=["']style\.css["'][^>]*>/gi,
       `<style>${cssFile?.content || ""}</style>`
     );
 
-    // Inline the script content into the original script tag to maintain compiler attributes (like type="text/babel")
+    // Inline the script content into the original script tag, forcing Babel module compilation if needed
     const scriptRegex = /<script([^>]*)\bsrc=["']script\.js["']([^>]*)><\/script>/gi;
     if (scriptRegex.test(previewDoc)) {
       previewDoc = previewDoc.replace(scriptRegex, (match, p1, p2) => {
-        return `<script${p1}${p2}>${jsFile?.content || ""}<\/script>`;
+        let attrs = p1 + p2;
+        if (needsBabel) {
+          attrs = ' type="text/babel" data-type="module"';
+        }
+        return `<script${attrs}>${jsFile?.content || ""}<\/script>`;
       });
     } else {
+      const scriptType = needsBabel ? ' type="text/babel" data-type="module"' : '';
       previewDoc = previewDoc.replace(
         "</body>",
-        `<script>${jsFile?.content || ""}<\/script></body>`
+        `<script${scriptType}>${jsFile?.content || ""}<\/script></body>`
       );
     }
   }
