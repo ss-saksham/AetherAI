@@ -21,6 +21,12 @@ export const customProxy = (serviceUrl, options = {}) => {
         proxyReqOpts.headers["x-user-avatar"] = srcReq.user.avatar;
       }
       
+      // Override host header for HTTPS targets to prevent Cloudflare/Render SNI 502 Bad Gateway
+      if (serviceUrl && serviceUrl.startsWith("https://")) {
+        const targetHost = serviceUrl.replace(/^https?:\/\//, "").split("/")[0];
+        proxyReqOpts.headers["host"] = targetHost;
+      }
+      
       // Call custom decorator if provided
       if (options.proxyReqOptDecorator) {
         return options.proxyReqOptDecorator(proxyReqOpts, srcReq);
