@@ -1,6 +1,8 @@
 {
   "rewrites": [
     { "source": "/__/auth/:path*", "destination": "https://cortexai-246e6.firebaseapp.com/__/auth/:path*" },
+    { "source": "/api/:path*", "destination": "https://cortex-gateway-tu5e.onrender.com/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://cortex-gateway-tu5e.onrender.com/uploads/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
