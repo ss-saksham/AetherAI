@@ -4,15 +4,9 @@ import { ChatOpenRouter } from "@langchain/openrouter";
 import dotenv from "dotenv";
 dotenv.config();
 
-const gemini35 = new ChatGoogleGenerativeAI({
-  model: "gemini-3.5-flash",
+const gemini25 = new ChatGoogleGenerativeAI({
+  model: "gemini-2.5-flash",
   maxRetries: 0, // Fail fast on invalid key/rate errors to trigger fallback immediately
-  apiKey: process.env.GOOGLE_API_KEY
-});
-
-const gemini15 = new ChatGoogleGenerativeAI({
-  model: "gemini-1.5-flash",
-  maxRetries: 0, // Fail fast to proceed to Groq fallback
   apiKey: process.env.GOOGLE_API_KEY
 });
 
@@ -25,11 +19,11 @@ const groqModel = process.env.GROQ_API_KEY ? new ChatGroq({
 
 // Construct fail-safe fallback chain
 export const gemini = groqModel 
-  ? gemini35.withFallbacks([gemini15, groqModel]) 
-  : gemini35.withFallbacks([gemini15]);
+  ? gemini25.withFallbacks([groqModel]) 
+  : gemini25;
 
 const getGroq = () => {
-  return groqModel ? groqModel.withFallbacks([gemini15]) : gemini15;
+  return groqModel ? groqModel.withFallbacks([gemini25]) : gemini25;
 };
 
 let openRouterInstance;
