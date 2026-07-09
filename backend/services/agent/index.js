@@ -6,20 +6,17 @@ dotenv.config();
 
 const formatUrl = (url, defaultPort) => {
   if (!url) return url;
-  const cleanUrl = url.replace(/^https?:\/\//, "");
-  const hostname = cleanUrl.split(":")[0];
   
-  // If it's a local development address, keep it as local http
-  if (hostname.includes("localhost") || hostname.includes("127.0.0.1")) {
-    if (!cleanUrl.includes(":")) {
-      return `http://${cleanUrl}:${defaultPort}`;
-    }
-    return `http://${cleanUrl}`;
+  // If it's already a full HTTP/HTTPS URL, preserve it
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
   }
   
-  // Map Render service slugs to their public HTTPS URLs to bypass internal region DNS failures
-  const slug = hostname.replace(/\.onrender\.com\/?$/, "");
-  return `https://${slug}.onrender.com`;
+  // If it's just a hostname/slug, construct the internal HTTP address
+  if (!url.includes(":")) {
+    return `http://${url}:${defaultPort}`;
+  }
+  return `http://${url}`;
 };
 if (process.env.AUTH_SERVICE) process.env.AUTH_SERVICE = formatUrl(process.env.AUTH_SERVICE, 8001);
 if (process.env.CHAT_SERVICE) process.env.CHAT_SERVICE = formatUrl(process.env.CHAT_SERVICE, 8002);
