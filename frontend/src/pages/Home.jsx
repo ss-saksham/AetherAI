@@ -34,6 +34,14 @@ function Home() {
   };
 
   useEffect(() => {
+    // Proactively ping Gateway and Auth services in parallel to trigger Render spin-ups
+    const wakeUpServices = async () => {
+      console.log("⚡ Proactively waking up backend microservices...");
+      api.get("/api/me").catch(() => {});
+      api.get("/api/auth").catch(() => {});
+    };
+    wakeUpServices();
+
     const initAuth = async () => {
       try {
         // 1. Check if session cookie is already active

@@ -24,7 +24,7 @@ api.interceptors.response.use(
 
     // Initialize or increment retry count
     config.__retryCount = config.__retryCount || 0;
-    const maxRetries = 3;
+    const maxRetries = 6;
 
     if (config.__retryCount >= maxRetries) {
       return Promise.reject(error);
